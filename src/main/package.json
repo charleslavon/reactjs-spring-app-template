@@ -1,0 +1,52 @@
+{
+  "name": "React-Template-App",
+  "version": "0.0.1",
+  "author": "NUANCE ABU WEB TEAM",
+  "devDependencies": {
+    "babel-core": "^6.2.1",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-react": "^6.1.18",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0",
+    "sass-loader":"4.0.0",
+    "style-loader":"0.13.1", 
+    "node-sass": "^3.8.0",
+    "css-loader":"0.23.1",
+    "url-loader":"0.5.7",
+    "karma": "~0.12.0",
+    "karma-jasmine": "^0.3.5",
+    "karma-jasmine-html-reporter": "~0.1.8",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma-threshold-reporter": "~0.1.7",
+    "karma-requirejs": "~0.2.1",
+    "karma-js-coverage": "0.4.0",
+    "node-static": "~0.7.3",
+    "requirejs": "~2.1.11",
+    "tiny-lr": "0.0.5",
+    "istanbul":"0.3.18"
+  },
+  "dependencies": {
+    "axios": "^0.9.1",
+    "babel-preset-stage-1": "^6.1.18",
+    "lodash": "^3.10.1",
+    "react": "^15.0.0",
+    "react-dom": "^15.0.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.5.2",
+    "redux": "^3.5.2",
+    "redux-promise": "^0.5.3",
+    "cssnano":"3.7.3",
+    "extract-text-webpack-plugin":"1.0.1",
+    "optimize-css-assets-webpack-plugin":"1.3.0"
+  },
+  "scripts": {
+    "build": "webpack -p --define process.env.NODE_ENV='\"production\"' --progress --colors",
+    "livereload": "gulp run",
+    "server": "static app",
+    "test": "karma start --single-run --browsers PhantomJS",
+    "watch": "npm run server > server.log & npm run livereload",
+    "watch-test": "karma start"
+    
+  }
+}

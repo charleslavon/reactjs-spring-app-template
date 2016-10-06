@@ -1,0 +1,31 @@
+// background
+$backgroundColor: #fff; 														
+
+// font 
+$fontSize: 14px; 																
+$fontFamily: "DroidSansRegular", sans-serif;
+$fontColor: #222; 																
+
+// form 
+$formFont: $fontFamily; 														
+
+// link
+$linkColor: #333;																
+$linkHoverColor: #000;															
+$linkDecoration: underline;														
+
+// heading
+$headingFamily: "DroidSansRegular", sans-serif;						
+$headingColor: #181818;															
+
+// grid variables
+$baseWidth: 		960px; 														
+$baseColWidth: 		40px;														
+$baseGutterWidth:	20px;														
+$isFluid: 			false;														
+$baseColCount: 		16;															
+
+// media query dimensions
+$tabletWidth: 			768px;
+$mobilePortraitWidth: 	300px;
+$mobileLandscapeWidth: 	420px;

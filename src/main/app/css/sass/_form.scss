@@ -1,0 +1,28 @@
+/* –––––––––––––––––––––––login form––––––––––––––––––––––––––– */
+
+.login-Wrapper {
+  margin-top: 2.5em;
+}
+
+.login-form {
+  min-height: 80%;
+  margin-top: 2em;
+  float: left;
+}
+
+.inputs input {
+  background: #ffffff no-repeat;
+  margin: 6px 0 10px 0px;
+  width: 300px;
+  font-size: 16px;
+  color: #666666;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -moz-box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
+  -webkit-box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
+  box-shadow: 0 1px 1px #ccc inset, 0 1px 0 #fff;
+  &:focus {
+    border: 2px solid #9acd32;
+  }
+}

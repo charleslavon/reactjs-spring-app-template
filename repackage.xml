@@ -1,0 +1,323 @@
+<project name="repackage-all">
+
+  <target name="repackage">
+
+    <exec executable="which" outputproperty="maven.path" failonerror="false">
+      <arg value="mvn"/>
+    </exec>
+    <echo message="Maven executable path: ${maven.path}" />
+
+    <macrodef name="up-package-rpm">
+      <attribute name="vendor"/>
+      <attribute name="dataconfig"/>
+      <attribute name="prefix"/>
+      <attribute name="envconfig"/>
+      <attribute name="baseport"/>
+      <sequential>
+        <antcall target="up-rpm">
+          <param name="vendor" value="@{vendor}"/>
+          <param name="dataconfig" value="@{dataconfig}"/>
+          <param name="prefix" value="@{prefix}"/>
+          <param name="envconfig" value="@{envconfig}"/>
+          <param name="baseport" value="@{baseport}"/>
+        </antcall>
+      </sequential>
+    </macrodef>
+
+    <mkdir dir="rpm"/>
+    <mkdir dir="rpm/BUILD"/>
+    <mkdir dir="rpm/SOURCES"/>
+    <mkdir dir="rpm/RPMS"/>
+    <mkdir dir="rpm/SRPMS"/>
+    <mkdir dir="rpm/SPECS"/>
+
+  	
+    <up-package-rpm vendor="nuance" prefix="/opt/dcs/nuance/dcs-tpl-up" envconfig="/opt/dcs/properties/NUANCE/env.properties" dataconfig="/opt/dcs/properties/NUANCE" baseport="15000" />
+
+  </target>
+
+  <target name="up-rpm" if="isLinux" depends="testOsName">
+
+    <echo/>
+    <echo>###############################################################</echo>
+    <echo>#</echo>
+    <echo>#  ${project.artifactId}/${vendor}</echo>
+    <echo>#</echo>
+    <echo>###############################################################</echo>
+    <echo/>
+
+    <!-- 
+        /opt/dcs/entune/dcs-te : 
+            dcsdir=/opt/dcs
+            makedir=/opt/dcs/entune
+            webdir=dcs-te
+
+        envdir=/opt/dcs/properties/[TMS|FIAT|CVP]
+        envconfig=/opt/dcs/properties/[TMS|FIAT|CVP]/env.properties
+
+        vardir=/opt/dcs/entune/var
+        varlogdir=/opt/dcs/entune/var/log
+        varrundir=/opt/dcs/entune/var/run
+        vartempdir=/opt/dcs/entune/var/temp
+    -->
+
+    <basename property="webdir" file="${prefix}"/>
+    <dirname property="makedir" file="${prefix}"/>
+    <dirname property="dcsdir" file="${makedir}"/>
+
+    <dirname property="envdir" file="${envconfig}"/>
+    <property name="datasource" value="${dataconfig}/${webdir}-datasource.properties"/>
+
+    <property name="bindir" value="${makedir}/bin"/>
+    <property name="keydir" value="${makedir}/keys"/>
+
+    <property name="vardir" value="${makedir}/var"/>
+    <property name="varlogdir" value="${vardir}/log" />
+    <property name="vartempdir" value="${vardir}/temp" />
+    <property name="varrundir" value="${vardir}/run" />
+
+    <property name="war" value="ROOT.war" />
+    <property name="init_includes" value="init_includes.sh" />
+    <property name="startup" value="startup.sh" />
+
+    <property name="webuser" value="tomcat" />
+
+    <property environment="env"/>
+      <condition property="jenkinsBuildNumber" value="${env.BUILD_NUMBER}" else="0">
+      <isset property="env.BUILD_NUMBER" />
+    </condition>
+
+    <delete includeEmptyDirs="true" verbose="true" failonerror="true">
+      <fileset dir="rpm/SOURCES" erroronmissingdir="false">
+        <include name="**"/>
+      </fileset>
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="true">
+      <fileset dir="rpm/BUILD" erroronmissingdir="false">
+        <include name="**"/>
+      </fileset>
+    </delete>
+
+    <mkdir dir="rpm/BUILD"/>
+    <mkdir dir="rpm/SOURCES"/>
+
+    <copy file="${war}" tofile="rpm/SOURCES/${war}"/>
+    <copy file="../webserver/${init_includes}" tofile="rpm/SOURCES/${init_includes}"/>
+    <copydir src="../webserver/conf" dest="rpm/SOURCES/conf" includes="**" />
+
+    <exec executable="sed" inputstring="${project.version}" outputproperty="release">
+      <arg value="s/-SNAPSHOT//g"/>
+    </exec>
+
+    <exec executable="awk" inputstring="${release}" outputproperty="milestone">
+        <arg value="-F" />
+        <arg value="." />
+        <arg value="{print $3}" />
+    </exec>
+
+    <antcall target="createStartupScript" />
+
+    <echo file="rpm/SPECS/project.spec" append="false">
+
+Name:      ${vendor}-${project.artifactId}-${release}
+Version:   ${buildNumber}.${jenkinsBuildNumber}
+Release:   SNAPSHOT
+BuildArch: noarch
+License:   (c) Nuance Communications inc. All rights reserved.
+Group:     Nuance
+Summary:   ${vendor} ${project.artifactId} ${release}-SNAPSHOT r${buildNumber} b${jenkinsBuildNumber} RPM
+BuildRoot: ${user.dir}/target/rpm/BUILD/${vendor}
+Requires:  dcs-platform >= 1.1
+
+
+%description
+${vendor} ${project.artifactId} ${release}-SNAPSHOT r${buildNumber} b${jenkinsBuildNumber} RPM
+
+%pre
+rm -rf $RPM_BUILD_ROOT
+
+%install
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/conf
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/lib
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/logs
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/webapps
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/work
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/work/oscache
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/work/Catalina
+install -d -m 0755 $RPM_BUILD_ROOT${prefix}/work/Catalina/localhost
+
+cp $RPM_SOURCE_DIR/${war} $RPM_BUILD_ROOT/${prefix}/webapps/
+cp $RPM_SOURCE_DIR/${init_includes} $RPM_BUILD_ROOT/${prefix}/${init_includes}
+cp $RPM_SOURCE_DIR/conf/* $RPM_BUILD_ROOT/${prefix}/conf
+
+#install -d -m 0755 $RPM_BUILD_ROOT${bindir}
+mkdir -p $RPM_BUILD_ROOT${bindir}
+cp $RPM_SOURCE_DIR/bin/${vendor}-${webdir}-${startup} $RPM_BUILD_ROOT/${bindir}
+
+install -d -m 0755 $RPM_BUILD_ROOT${keydir}
+
+%files
+%defattr(755, tomcat, tomcat)
+%dir ${prefix}
+%dir ${prefix}/conf
+%dir ${prefix}/lib
+%dir ${prefix}/logs
+%dir ${prefix}/webapps
+%dir ${prefix}/work
+%dir ${prefix}/work/oscache
+%dir ${prefix}/work/Catalina
+%dir ${prefix}/work/Catalina/localhost
+
+${prefix}/webapps/${war}
+${prefix}/${init_includes}
+${prefix}/conf/*.xml
+${prefix}/conf/*.properties
+${prefix}/conf/*.policy
+
+#%%dir ${bindir}
+${bindir}/${vendor}-${webdir}-${startup}
+
+%dir ${keydir}
+
+%post
+ln -s ${bindir}/${vendor}-${webdir}-${startup} /etc/init.d/${webdir}
+mkdir -p ${varlogdir}
+mkdir -p ${varrundir}
+mkdir -p ${vartempdir}
+chown -R ${webuser}:${webuser} ${vardir}
+chmod -R 755 ${vardir}
+
+chown -R ${webuser}:${webuser} ${bindir}/${vendor}-${webdir}-${startup}
+chmod -R 755 ${bindir}
+
+if [[ -f ${datasource} ]]; then
+    beurl=`cat ${datasource} | grep "^bedb.url" | cut -d'=' -f2 | xargs`
+    beurl=${beurl//[\/]/+++}
+    beuser=`cat ${datasource} | grep "^bedb.user" | cut -d'=' -f2 | xargs`
+    bepassword=`cat ${datasource} | grep "^bedb.password" | cut -d'=' -f2 | xargs`
+
+    if [[ -n $beurl ]]; then
+        sed -i s/"@@BEURL@@"/"$beurl"/g ${prefix}/conf/context.xml
+    fi
+
+    if [[ -n $beuser ]]; then
+        sed -i s/"@@BEUSER@@"/"$beuser"/g ${prefix}/conf/context.xml
+    fi
+
+    if [[ -n $bepassword ]]; then
+        sed -i s/"@@BEPASSWORD@@"/"$bepassword"/g ${prefix}/conf/context.xml
+    fi
+fi
+
+sed -i s/"+++"/\\//g ${prefix}/conf/context.xml
+
+%postun
+rm -rf /etc/init.d/${webdir}
+rm -rf ${prefix}
+#rm -rf ${bindir}/${vendor}-${webdir}-${startup}
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+    </echo>
+
+    <echo/>
+    <echo>SPEC file :</echo>
+    <exec executable="cat">
+      <arg value="rpm/SPECS/project.spec"/>
+    </exec>
+    <echo/>
+
+    <path id="rpm.path">
+      <fileset dir="rpm"/>
+    </path>
+    <pathconvert pathsep="${line.separator}  --> " property="echo.rpm.path" refid="rpm.path">
+    </pathconvert>
+    <echo>${echo.rpm.path}</echo>
+
+
+    <echo>[START]  Generate RPM [${vendor}-${project.artifactId}]</echo>
+
+    <rpm specFile="project.spec" topDir="rpm" cleanBuildDir="true" removeSpec="true" removeSource="true" command="-bb" failOnError="true" />
+
+    <echo>[END]  Generate RPM [${vendor}-${project.artifactId}]</echo>
+
+    <echo>[DEPLOY]  Deploy RPM [${vendor}-${project.artifactId}] - file: rpm/RPMS/noarch/${vendor}-${project.artifactId}-${release} [build number=${buildNumber}]</echo>
+
+    <exec executable="${maven.path}" failonerror="true" >
+      <arg value="deploy:deploy-file"/>
+      <arg value="-DrepositoryId=dcs-artifactory"/>
+      <arg value="-Durl=http://dcs-artifactory.nuance.com:8081/artifactory/dcs"/>
+      <arg value="-Dpackaging=rpm"/>
+      <arg value="-Dfile=rpm/RPMS/noarch/${vendor}-${project.artifactId}-${release}-${buildNumber}.${jenkinsBuildNumber}-SNAPSHOT.noarch.rpm" />
+      <arg value="-DartifactId=${project.artifactId}" />
+      <arg value="-DgroupId=${project.groupId}" />
+      <arg value="-Dversion=${project.version}"/>
+    </exec>
+  </target>
+
+  <target name="createStartupScript">
+
+    <mkdir dir="rpm/SOURCES/bin"/>
+
+    <propertyfile file="rpm/SOURCES/bin/port.properties">
+      <entry key="prop.connector.port" default="${baseport}" value="80" operation="+" type="int" pattern="0" />
+      <entry key="prop.shutdown.port" default="${baseport}" value="5" operation="+" type="int" pattern="0" />
+      <entry key="prop.jmx.port" default="${baseport}" value="10" operation="+" type="int" pattern="0" />
+    </propertyfile>
+
+    <echo/>
+    <echo>Port properties :</echo>
+    <exec executable="cat">
+      <arg value="rpm/SOURCES/bin/port.properties"/>
+    </exec>
+    <echo/>
+
+    <property file="rpm/SOURCES/bin/port.properties"/>
+
+    <echo file="rpm/SOURCES/bin/env.properties" append="false">
+platform_home=${dcsdir}/platform
+catalina_home=${dcsdir}/platform/tomcat
+java_home=${dcsdir}/platform/jdk
+web_dir=${webdir}
+make_home=${makedir}
+dcs_home=${dcsdir}
+catalina_out=${varlogdir}/${vendor}-${webdir}.log
+catalina_pid=${varrundir}/${vendor}-${webdir}.pid
+catalina_temp=${vartempdir}/${vendor}-${webdir}
+env_config=${envconfig}
+connector_port=${prop.connector.port}
+shutdown_port=${prop.shutdown.port}
+jmx_port=${prop.jmx.port}
+env_properties=${envconfig}
+datasource_properties=${datasource}
+    </echo>
+
+    <echo>rpm/SOURCES/bin/env.properties file :</echo>
+    <exec executable="cat">
+      <arg value="rpm/SOURCES/bin/env.properties"/>
+    </exec>
+    <echo/>
+
+    <copy file="../webserver/bin/${startup}" tofile="rpm/SOURCES/bin/${vendor}-${webdir}-${startup}"/>
+    <replace file="rpm/SOURCES/bin/${vendor}-${webdir}-${startup}" token="|||" replacefilterfile="rpm/SOURCES/bin/env.properties"/>
+
+    <replace file="rpm/SOURCES/conf/context.xml" token="|||" replacefilterfile="rpm/SOURCES/bin/env.properties"/>
+
+    <echo>rpm/SOURCES/bin/${vendor}-${webdir}-${startup} file :</echo>
+    <exec executable="cat">
+      <arg value="rpm/SOURCES/bin/${vendor}-${webdir}-${startup}"/>
+    </exec>
+    <echo/>
+
+  </target>
+
+  <target name="testOsName">
+    <condition property="isLinux">
+      <equals arg1="${os.name}" arg2="Linux"/>
+    </condition>
+  </target>
+
+</project>
+

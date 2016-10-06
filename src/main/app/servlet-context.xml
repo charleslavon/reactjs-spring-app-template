@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:security="http://www.springframework.org/schema/security"  
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller/@RequestMapping programming model -->
+	<mvc:annotation-driven />
+	
+	<!-- Enables scanning of base package(s) to register annotated POJOs as beans -->
+	<context:component-scan base-package="com.connect.portal" />
+
+	  <!-- Static assets -->
+	<mvc:resources mapping="/images/**" location="images/" />
+	<mvc:resources mapping="/js/**" location="js/" />
+	<mvc:resources mapping="/css/**" location="css/" />
+	<mvc:resources mapping="/fonts/**" location="fonts/" />
+	<mvc:resources mapping="/bower_components/**" location="bower_components/" />
+	<mvc:resources mapping="/templates/**" location="templates/" />
+	
+	<!-- Spring's MVC stack requires that the MultipartResolver bean be called multipartResolver -->
+	<bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
+	
+	<!-- Enables JSON and other return types -->
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		  <property name="mediaTypes">
+		    <map>
+		      <entry key="html" value="text/html"/>
+		      <entry key="json" value="application/json"/>
+		      <entry key="xml" value="application/xml"/>
+		    </map>
+		  </property>
+		  
+		  <!-- Resolves views selected for rendering by @Controllers to .html resources in /WEB-INF/
+		  modigie 12/09/14 This piece is not been used since the app is using spring mvc controller to serve the jsp page
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/" />
+					<property name="suffix" value=".html" />
+					<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+				</bean>
+			</list>
+		</property> -->
+		
+		<!-- Support sending JSON responses -->
+		<property name="defaultViews">
+			<list>
+				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+			</list>
+		</property>
+	
+    </bean>
+    
+	<bean id="propertyLoaderAppConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:manifest.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+
+	<!-- SVN version number for build info in source -->
+	<bean id="manifestFile" class="java.util.jar.Manifest">
+		<constructor-arg value="/META-INF/MANIFEST.MF" type="java.io.InputStream" />
+	</bean>
+	
+	<!--  Nested beans must live here, at the end of the file  -->
+	<beans profile="production">
+<!-- 		<bean id="connect" class="com.connect.portal.service.ConnectServiceImpl" lazy-init="true">  -->
+<!-- 		</bean> -->
+	</beans>
+	<beans profile="dev">
+<!-- 	    <bean id="connect" class="com.connect.portal.service.ConnectServiceStub">  -->
+<!-- 		</bean> -->
+	</beans>
+</beans>

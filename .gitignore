@@ -1,0 +1,13 @@
+/target/
+/.project
+/.springBeans
+/.classpath
+/src/main/node/
+/src/main/node_modules/
+/src/main/webapp/bundle.js
+/src/main/webapp/bundle.js.map
+/src/main/webapp/app.css.map
+/src/main/gulpfile.js
+/src/main/webapp/app.css
+/.settings/
+/.externalToolBuilders/

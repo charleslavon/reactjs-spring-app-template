@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    .grid-container {
+        width: 100%;
+        max-width: 1200px;
+        /* to support padding/gutters, set a border box on all elements inside the grid */
+        box-sizing: border-box;
+        /* Another options is to apply border-box to every item with: * {box-sizing: border-box;} */
+    }
+    
+    .row:before,
+    .row:after {
+        /* clear fix to ensure that our rows expand sufficiently to contain their child elemments */
+        content: "";
+        	display: table;
+        clear: both;
+    }
+
+    /*column positioning*/
+    [class*='col-'] {
+        /* using floats to position columns is very popular and supposedly the 'least error prone' */
+        float: left;
+        /* this is necessary because otherwise when columns are empty they would stack vertically */
+        min-height: 1px;
+        /* the width of the container is 100%, and we want 6 columns, so 100/6 = 16.66, so our base column width is 16.66%.*/
+        width: 16.66%;
+        /* the gutter */
+        padding: 12px;
+        background-color: #FFDCDC;
+    }
+
+    /* In support of sections which are multiple columns wide */
+    .col-1 {
+        width: 16.66%;
+    }
+    
+    .col-2 {
+        width: 33.33%;
+    }
+    
+    .col-3 {
+        width: 50%;
+    }
+    
+    .col-4 {
+        width: 66.664%;
+    }
+    
+    .col-5 {
+        width: 83.33%;
+    }
+    
+    .col-6 {
+        width: 100%;
+    }
+
+
+    /*-- colorful styling to show the grid --*/
+    div.grid-container *{
+        outline: 1px solid #F6A1A1; 
+    }
+    [class*='col-'] > p {
+     background-color: #FFC2C2; 
+     padding: 0;
+     margin: 0;
+     text-align: center; 
+     color: white; 
+    }
+    </style>
+
+</head>
+
+<body>
+    <div class="grid-container outline">
+        <div class="row">
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+            <div class="col-1">
+                <p>col-1</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <p>col-2</p>
+            </div>
+            <div class="col-2">
+                <p>col-2</p>
+            </div>
+            <div class="col-2">
+                <p>col-2</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <p>col-3</p>
+            </div>
+            <div class="col-3">
+                <p>col-3</p>
+            </div>
+        </div>
+    </div>
+    <footer></footer>
+</body>
+
+</html>

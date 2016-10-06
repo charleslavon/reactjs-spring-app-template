@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+	
+	<!-- Enables scanning of base package(s) to register annotated POJOs as beans -->
+	<context:component-scan base-package="com.connect.portal" />
+
+	<!-- Handles HTTP GET requests for /static/** by efficiently serving up static resources in the ${webappRoot}/static directory -->
+	<mvc:resources mapping="/static/**" location="/static/" />
+
+	<!-- Enables JSON and other return types -->
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	  <property name="mediaTypes">
+	    <map>
+	      <entry key="atom" value="application/atom+xml"/>
+	      <entry key="html" value="text/html"/>
+	      <entry key="json" value="application/json"/>
+	    </map>
+	  </property>
+	  
+	   
+	  <property name="viewResolvers">
+	   <list>
+	   	 <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	   		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	        <property name="prefix" value="/WEB-INF/views/"/>
+	        <property name="suffix" value=".jsp"/>
+	      </bean>
+	    </list>
+	  </property>
+	  <property name="defaultViews">
+	    <list>
+	      <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+	    </list>
+	  </property>
+	</bean>
+	
+	<bean id="propertyLoaderAppConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:portal.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+	
+	
+	<mvc:interceptors>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/*"/>
+        	<bean class="com.connect.portal.web.HeaderInjector"/> 
+        </mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!--  Nested beans must live here, at the end of the file  -->
+	<beans profile="production">
+		<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> 
+			<property name="basenames">
+				<list>
+					<value>classpath:messages</value>
+					<value>classpath:marcom</value>
+				</list>
+			</property>
+			<property name="cacheSeconds" value="5" />
+		</bean>
+		<bean id="connect" class="com.connect.portal.service.ConnectServiceImpl"> 
+			<constructor-arg type="String">
+		      <value>${connect.service.uri}</value>
+		    </constructor-arg>
+		</bean>
+	</beans>
+	<beans profile="dev">
+	    <bean id="messageSource" class="com.connect.portal.web.DevOnlyMessageSource"/>
+	    <bean id="connect" class="com.connect.portal.service.ConnectServiceStub"> 
+			<constructor-arg type="String">
+		      <value>dev-profile</value>
+		    </constructor-arg>
+		</bean>
+	</beans>
+</beans>
