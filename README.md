@@ -1,5 +1,12 @@
 # Template-portal
 
+
+## Clone the project
+1. create a directory for your new app, mkdir my-new-app & cd my-new-app
+2. git clone git@git.labs.nuance.com:dcs-webteam/reactjs-springmvc-app-template.git /my-new-app
+3. reinitialize the git settings, git init
+
+
 You have 3 options regarding how to configure and run this application. 
 
 
