@@ -1,4 +1,4 @@
-package com.connect.portal.config;
+package com.tmd.config;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;

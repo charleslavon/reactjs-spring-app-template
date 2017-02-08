@@ -76,7 +76,7 @@
     "open:webapp": "babel-node tools/webappServer.js",
     "lint": "esw webpack.config.* src tools --color --ignore-pattern node_modules; exit 0;",
     "lint:watch": "esw webpack.config.* src tools --color --ignore-pattern node_modules --watch",
-    "clean-webapp": "npm run remove-webapp && mkdir WEB-INF",
+    "clean-webapp": "npm run remove-webapp && mkdir webapp/WEB-INF",
     "remove-webapp": "rimraf ./webapp/WEB-INF",
     "prebuild": "npm run clean-webapp && npm run lint && npm run test",
     "build": "babel-node tools/build.js",

@@ -1,4 +1,4 @@
-package com.connect.portal.config;
+package com.tmd.config;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

@@ -1,4 +1,4 @@
-package com.connect.portal.config;
+package com.tmd.config;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -28,7 +28,7 @@ public class WebInitializer implements WebApplicationInitializer {
 		// Creates the root application context
 		AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
 
-		appContext.setDisplayName("Template Portal");
+		appContext.setDisplayName("ReactJS Spring Boilerplate");
 
 		// Registers the application configuration with the root context
 		appContext.register(AppConfig.class);
