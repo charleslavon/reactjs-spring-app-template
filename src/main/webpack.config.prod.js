@@ -20,7 +20,7 @@ export default {
         tls: 'empty'
     },
 	output:{
-	  path: `${__dirname}/webapp`,
+	  path: `${__dirname}/webapp/WEB-INF`,
 	  publicPath:'/',
 	  filename:'bundle.js',
 

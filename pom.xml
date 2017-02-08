@@ -2,37 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.connect</groupId>
-	<artifactId>template-portal</artifactId>
+	<groupId>com.tmd</groupId>
+	<artifactId>reactjs-spring-boilerplate</artifactId>
 	<packaging>war</packaging>
-	<version>1.18.49-SNAPSHOT</version>
-
-	<distributionManagement>
-		<repository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>tgt.release</id>
-			<name>TGT Release Repository</name>
-			<url>http://tgts-nexus.nuance.com:8081/nexus/content/repositories/releases</url>
-			<layout>default</layout>
-		</repository>
-		<snapshotRepository>
-			<uniqueVersion>true</uniqueVersion>
-			<id>tgt.snapshot</id>
-			<name>TGT Snapshot Repository</name>
-			<url>http://tgts-nexus.nuance.com:8081/nexus/content/repositories/snapshots</url>
-			<layout>default</layout>
-		</snapshotRepository>
-	</distributionManagement>
-
-	<scm>
-		<connection>scm:git:git@git.assembla.com:tgt-git.99.git/web-team/reactjs-template</connection>
-	</scm>
-
+	<version>1.0.0</version>
 
 	<properties>
 		<app.version.major>1</app.version.major>
-		<app.version.minor>18</app.version.minor>
-		<app.version.milestone>49</app.version.milestone>
+		<app.version.minor>0</app.version.minor>
+		<app.version.milestone>0</app.version.milestone>
 		<groovy.version>2.7.0</groovy.version>
 		<spock.version>1.0-groovy-2.3</spock.version>
 		<jmockit.version>0.999.17</jmockit.version>
@@ -46,10 +24,9 @@
 		<org.aspectj-version>1.6.10</org.aspectj-version>
 		<org.slf4j-version>1.7.21</org.slf4j-version>
 		<log4j.version>2.5</log4j.version>
-		<shared.version>${project.version}</shared.version>
 	</properties>
 	<dependencies>
-	
+
 		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -70,16 +47,16 @@
 		</dependency>
 
 		<!-- Spring Security -->
-	    <dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-web</artifactId>
-	        <version>${org.springsecurity-version}</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.springframework.security</groupId>
-	        <artifactId>spring-security-config</artifactId>
-	        <version>${org.springsecurity-version}</version>
-	    </dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springsecurity-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springsecurity-version}</version>
+		</dependency>
 
 
 		<!-- Testing -->
@@ -204,67 +181,38 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Connect Platform Dependencies -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.tgt</groupId> -->
-		<!-- <artifactId>sharedbrokers</artifactId> -->
-		<!-- <version>${shared.version}</version> -->
-		<!-- <exclusions> -->
-		<!-- <exclusion> -->
-		<!-- <artifactId>axiom-api</artifactId> -->
-		<!-- <groupId>org.apache.ws.commons.axiom</groupId> -->
-		<!-- </exclusion> -->
-		<!-- </exclusions> -->
-		<!-- </dependency> -->
 	</dependencies>
 
 
 	<build>
 		<plugins>
 			<plugin>
-		        <groupId>org.codehaus.gmavenplus</groupId>
-		        <artifactId>gmavenplus-plugin</artifactId>
-		        <version>1.5</version>
-		        <executions>
-		            <execution>
-		                <goals>
-		                      <goal>addSources</goal>
-				              <goal>addTestSources</goal>
-				              <goal>generateStubs</goal>
-				              <goal>compile</goal>
-				              <goal>testGenerateStubs</goal>
-				              <goal>testCompile</goal>
-				              <goal>removeStubs</goal>
-				              <goal>removeTestStubs</goal>
-		                </goals>
-		            </execution>
-		        </executions>
-		        <configuration>
-		        	<sources>
-		        		<source>
-		        			<directory>${project.basedir}/src/main/groovy</directory>
-			              	<includes>
-				                <include>**/*.groovy</include>
-				                <include>**/*.java</include>
-				              </includes>
-			            </source>
-		        	</sources>
-		        	<testSources>
-			            <testSource>
-			              <directory>${project.basedir}/src/test/java</directory>
-			              <includes>
-			                <include>**/*Test.groovy</include>
-			                <include>**/*Test.java</include>
-			              </includes>
-			            </testSource>
-			        </testSources>
-		        </configuration>
-		    </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<compilerId>groovy-eclipse-compiler</compilerId>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-compiler</artifactId>
+						<version>2.7.0-01</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-batch</artifactId>
+						<version>2.3.7-01</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
-	          <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-surefire-plugin</artifactId>
-	          <version>2.19.1</version>
-	        </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
@@ -299,11 +247,13 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>0.0.27</version>
+				<version>1.3</version>
 
 				<configuration>
 					<workingDirectory>src/main/</workingDirectory>
+					<installDirectory>src/main</installDirectory>
 				</configuration>
+
 
 				<executions>
 					<execution>
@@ -313,8 +263,8 @@
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
-							<nodeVersion>v0.12.7</nodeVersion>
-							<npmVersion>1.4.3</npmVersion>
+							<nodeVersion>v6.3.1</nodeVersion>
+							<npmVersion>3.10.3</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -323,27 +273,25 @@
 							<goal>npm</goal>
 						</goals>
 						<phase>prepare-package</phase>
+
+						<configuration>
+							<!-- the install argument is provided by default but leaving
+									this here for clarity. -->
+							<arguments>install</arguments>
+						</configuration>
 					</execution>
 					<execution>
 						<id>webpack build</id>
 						<goals>
-							<goal>webpack</goal>
+							<goal>npm</goal>
 						</goals>
-						<configuration>
-							<arguments>-p</arguments>
-						</configuration>
+
 						<phase>prepare-package</phase>
+
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
 					</execution>
-					<!-- <execution>
-                      <id>javascript tests</id>
-                       <goals>
-                        <goal>karma</goal>
-                      </goals>
-                      <phase>integration-test</phase>
-                    <configuration>
-                   <karmaConfPath>karma.conf.ci.js</karmaConfPath>
-                  </configuration>
-                  </execution> -->
 				</executions>
 			</plugin>
 		</plugins>

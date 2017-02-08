@@ -19,10 +19,8 @@ src/main/node_modules/
 
 # IDE project configs
 .idea/
-.project/
 .springBeans/
 .classpath/
-.settings/
 .externalToolBuilders/
 
 #build folders
